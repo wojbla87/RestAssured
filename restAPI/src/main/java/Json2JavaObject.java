@@ -9,7 +9,8 @@ import java.util.function.Predicate;
 import static io.restassured.RestAssured.get;
 
 /**
- * Class maps JSON String to Java POJO
+ * Class maps JSON String to Java POJO and
+ * Filter List Comment copies
  * Created by wblachut on 2017-05-12.
  */
 
@@ -33,21 +34,18 @@ public class Json2JavaObject {
 
         //Filter all objects from List commentsCopy1 which does not have postId=1
 
-        removeAllCommentObjectWithoutPostIdField1(commentsCopy1);
+        commentsCopy1.removeIf(getPostIdNotOnePredicate());
 
         //Filter all objects from List commentsCopy2 does not have in body keyword="non"
 
-        removeAllCommentObjectsWithoutNonStringInBody(commentsCopy2);
-
+        commentsCopy2.removeIf(getBodyDoesntContainNonPredicate());
     }
 
-    private static void removeAllCommentObjectsWithoutNonStringInBody(List<Comment> comments) {
-        Predicate<Comment> commentPredicate2 = c -> (!c.getBody().contains("non"));
-        comments.removeIf(commentPredicate2);
+    private static Predicate<Comment> getBodyDoesntContainNonPredicate() {
+        return c -> (!c.getBody().contains("non"));
     }
 
-    private static void removeAllCommentObjectWithoutPostIdField1(List<Comment> comments) {
-        Predicate<Comment> commentPredicate1 = c -> c.getPostId() != 1;
-        comments.removeIf(commentPredicate1);
+    private static Predicate<Comment> getPostIdNotOnePredicate() {
+        return c -> c.getPostId() != 1;
     }
 }
